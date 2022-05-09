@@ -1,0 +1,836 @@
+import discord
+import random
+import asyncio
+import time
+import pickle
+import io
+from discord.ext import commands
+
+bot = commands.Bot(command_prefix='!')
+
+code_race = code_class = code_status = code_proefs = code_items = code_religions = code_proefs2 = code_skills = code_spells = code_users = code_chars = code_systems = 0
+
+global systems, servers, users, chars, character, classes, races, status, proefs, proefs2, items, religions, skills, spells
+systems = {}
+servers = []
+users = {}
+chars ={}
+character ={}
+classes = {}
+races = {}
+status = {}
+proefs = {}
+proefs2 = {}
+items = {}
+religions = {}
+skills = {}
+spells = {}
+
+
+async def update_stats():
+    await bot.wait_until_ready()
+    global races, classes, status, proefs, proefs2, items, religions, skills, spells, users, chars, systems, code_race, code_class, code_status, code_proefs, code_items, code_religions, code_proefs2, code_skills, code_spells, code_users, code_chars, code_systems
+
+    while not bot.is_closed():
+        if code_race > 0:
+            cont = 0
+            with io.open("racas.txt", "w",encoding='utf8') as rc:
+                for key in races:
+                    if cont > 0:
+                        rc.write(f"""\n{races[key]}\n{key}""")
+                    else:
+                        rc.write(f"""{races[key]}\n{key}""")
+                    cont+=1
+                rc.close()
+
+        if code_class > 0:
+            cont2 = 0
+            with io.open("classes.txt", "w",encoding='utf8') as cs:
+                for key2 in classes:
+                    if cont2 > 0:
+                        cs.write(f"""\n{classes[key2]}\n{key2}""")
+                    else:
+                        cs.write(f"""{classes[key2]}\n{key2}""")
+                    cont2+=1
+                cs.close()
+
+        if code_status > 0:
+            cont3 = 0
+            with io.open("status.txt", "w",encoding='utf8') as st:
+                for key3 in status:
+                    stats = ""
+                    for sig,sts in status[key3].items():
+                        stats += sig + "," + sts + " "
+                    stats = stats[:len(stats)-1]
+                    if cont3 > 0:
+                        st.write(f"""\n{key3}\n{stats}""")
+                    else:
+                        st.write(f"""{key3}\n{stats}""")
+                    cont3+=1
+                st.close()
+
+        if code_proefs > 0:
+            cont4 = 0
+            with io.open("pericias.txt", "w",encoding='utf8') as pf:
+                for key4 in proefs:
+                    if cont4 > 0:
+                        pf.write(f"""\n{proefs[key4]}\n{key4}""")
+                    else:
+                        pf.write(f"""{proefs[key4]}\n{key4}""")
+                    cont4+=1
+                pf.close()
+
+        if code_items > 0:
+            cont5 = 0
+            with io.open("items.txt", "w",encoding='utf8') as it:
+                for key5 in items:
+                    if cont5 > 0:
+                        it.write(f"""\n{items[key5]}\n{key5}""")
+                    else:
+                        it.write(f"""{items[key5]}\n{key5}""")
+                    cont5 += 1
+                it.close()
+
+        if code_religions > 0:
+            cont6 = 0
+            with io.open("religioes.txt", "w",encoding='utf8') as rl:
+                for key6 in religions:
+                    if cont6 > 0:
+                        rl.write(f"""\n{religions[key6]}\n{key6}""")
+                    else:
+                        rl.write(f"""{religions[key6]}\n{key6}""")
+                    cont6 += 1
+                rl.close()
+
+        if code_proefs2 > 0:
+            cont7 = 0
+            with io.open("proefs.txt", "w",encoding='utf8') as pf2:
+                for key7 in proefs2:
+                    if cont7 > 0:
+                        pf2.write(f"""\n{proefs2[key7]}\n{key7}""")
+                    else:
+                        pf2.write(f"""{proefs2[key7]}\n{key7}""")
+                    cont7+=1
+                pf2.close()
+
+        if code_skills > 0:
+            cont8 = 0
+            with io.open("talentos.txt", "w",encoding='utf8') as sk:
+                for key8 in skills:
+                    if cont8 > 0:
+                        sk.write(f"""\n{skills[key8]}\n{key8}""")
+                    else:
+                        sk.write(f"""{skills[key8]}\n{key8}""")
+                    cont8+=1
+                sk.close()
+
+        if code_spells > 0:
+            cont9 = 0
+            with io.open("feiticos.txt", "w",encoding='utf8') as sp:
+                for key9 in spells:
+                    if cont9 > 0:
+                        sp.write(f"""\n{spells[key9]}\n{key9}""")
+                    else:
+                        sp.write(f"""{spells[key9]}\n{key9}""")
+                    cont9+=1
+                sp.close()
+
+        if code_users > 0:
+            cont10 = 0
+            with io.open("usuarios.txt", "w",encoding='utf8') as us:
+                for key10 in users:
+                    if cont10 > 0:
+                        us.write(f"""\n{spells[key10]}\n{key10}""")
+                    else:
+                        us.write(f"""{users[key10]}\n{key10}""")
+                    cont10+=1
+                us.close()
+        if code_systems > 0:
+            with open("sistemas.bin", "w+b") as sy:
+                pickle.dump(systems,sy)
+                sy.close()
+
+        await asyncio.sleep(5)
+
+
+@bot.event
+async def on_member_join(member):
+    for channel in member.server.channels:
+        if str(channel) == "general":
+            await bot.send_message(f"""Bem vindo meu caro viajante, {member.mention}""")
+
+@bot.event
+async def on_ready():
+    global masters,races, classes, status, proefs, proefs2, items, religions, skills, spells, users, chars, systems, code_class, code_race, code_status, code_items, code_religions, code_proefs2, code_skills, code_spells, code_users, code_chars, code_systems
+    print('Estou funcionando como {0.user}'.format(bot))
+    masters = ["Vini#0987", "My RPG Bot#0990"]
+    with io.open("racas.txt", "r",encoding='utf8') as rc:
+        race1 = rc.readline()
+        while race1 != "":
+            cd1 = rc.readline()
+            race = race1.strip()
+            code_race = int(cd1.strip())
+            races[code_race] = race
+            race1 = rc.readline()
+        rc.close()
+    with io.open("classes.txt", "r",encoding='utf8') as cs:
+        class1 = cs.readline()
+        while class1 != "":
+            cd2 = cs.readline()
+            class2 = class1.strip()
+            code_class = int(cd2.strip())
+            classes[code_class] = class2
+            class1 = cs.readline()
+        cs.close()
+    with io.open("status.txt", "r",encoding='utf8') as st:
+        code1 = st.readline()
+        while code1 != "":
+            sts = st.readline()
+            sts2 = sts.strip()
+            i = 0
+            conteudo = {}
+            condition = False
+            while not condition:
+                sig = ""
+                st_aux = ""
+                while sts2[i] != ",":
+                    sig += sts2[i]
+                    i += 1
+                i += 1
+                while i < len(sts2) and (sts2[i] != " "):
+                    st_aux += sts2[i]
+                    i += 1
+                if i == len(sts2):
+                    condition = True
+                conteudo[sig] = st_aux
+                i+=1
+            code_status = int(code1.strip())
+            status[code_status] = conteudo
+            code1 = st.readline()
+        st.close()
+        with io.open("pericias.txt", "r",encoding='utf8') as pf:
+            proef1 = pf.readline()
+            while proef1 != "":
+                cd1 = pf.readline()
+                proef = proef1.strip()
+                code_proefs = int(cd1.strip())
+                proefs[code_proefs] = proef
+                proef1 = pf.readline()
+            pf.close()
+        with io.open("items.txt", "r",encoding='utf8') as it:
+            item1 = it.readline()
+            while item1 != "":
+                cd1 = it.readline()
+                item = item1.strip()
+                code_items = int(cd1.strip())
+                items[code_items] = item
+                item1 = it.readline()
+            it.close()
+        with io.open("religioes.txt", "r",encoding='utf8') as rl:
+            relig1 = rl.readline()
+            while relig1 != "":
+                cd1 = rl.readline()
+                religion = relig1.strip()
+                code_religions = int(cd1.strip())
+                religions[code_religions] = religion
+                relig1 = rl.readline()
+            rl.close()
+        with io.open("proefs.txt", "r",encoding='utf8') as pf2:
+            proef1 = pf2.readline()
+            while proef1 != "":
+                cd1 = pf2.readline()
+                proef = proef1.strip()
+                code_proefs2 = int(cd1.strip())
+                proefs2[code_proefs2] = proef
+                proef1 = pf2.readline()
+            pf2.close()
+        with io.open("talentos.txt", "r",encoding='utf8') as sk:
+            skill1 = sk.readline()
+            while skill1 != "":
+                cd1 = sk.readline()
+                skill = skill1.strip()
+                code_skills = int(cd1.strip())
+                skills[code_skills] = skill
+                skill1 = sk.readline()
+            sk.close()
+        with io.open("feiticos.txt", "r",encoding='utf8') as sp:
+            spell1 = sp.readline()
+            while spell1 != "":
+                cd1 = sp.readline()
+                spell = spell1.strip()
+                code_spells = int(cd1.strip())
+                spells[code_spells] = spell
+                spell1 = sp.readline()
+            sp.close()
+        with io.open("usuarios.txt", "r",encoding='utf8') as us:
+            user1 = us.readline()
+            while user1 != "":
+                cd1 = us.readline()
+                user = user1.strip()
+                code_users = int(cd1.strip())
+                users[code_users] = user
+                user1 = us.readline()
+            us.close()
+        with open("sistemas.bin", "r+b") as sy:
+            try:
+                systems = pickle.load(sy)
+                code_systems = len(systems)
+            except:
+                print("Ainda não tem")
+            sy.close()
+    print(races)
+    print(classes)
+    print(status)
+    print(proefs)
+    print(proefs2)
+    print(items)
+    print(religions)
+    print(skills)
+    print(spells)
+    print(users)
+    print(systems)
+
+@bot.command()
+async def rolardado(ctx):
+    aux_num = ""
+    quant_dados = 0
+    lados = 0
+    await ctx.send("Quantos dados?")
+    msg = await bot.wait_for('message')
+    mensagem = msg.content
+    try:
+        quant_dados = int(mensagem)
+    except:
+        await ctx.send("Parâmetro incorreto.")
+    if quant_dados > 0:
+        await ctx.send("Digite a quantidade de lados do(s) dado(s):")
+        msg = await bot.wait_for('message')
+        mensagem = msg.content
+        try:
+            lados = int(mensagem)
+        except:
+            await ctx.send("Parâmetro incorreto.")
+    if lados > 0:
+        total = 0
+        str_resultados = ""
+        for i in range(quant_dados):
+            num = random.randint(1, lados)
+            total += num
+            if i == quant_dados-1:
+                str_resultados += str(num)
+            else:
+                str_resultados += str(num) + ", "
+        await ctx.send(f"""Você tirou {str_resultados} na rolagem.\nTotal: {total}""")
+    else:
+        await ctx.send(f"""Você falhou em rolar os dados. Tente novamente""")
+
+@bot.command()
+async def criarpersonagem(ctx,*,arg):
+    if not ctx.author in users.values():
+        code_users += 1
+        users[code_users] = ctx.author
+        print("Usuário criado com sucesso!")
+
+@bot.command()
+async def criarraca(ctx,*,arg):
+    if ctx.author in masters:
+        raca = arg
+        print(f"""Raça: {raca} criada com sucesso! """)
+        await ctx.send(f"""Raça: {raca} criada com sucesso! """)
+        code_race += 1
+        races[code_race] = raca
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletarraca(ctx,*,arg):
+    if ctx.author in masters:
+        raca = arg
+        race_key = -1
+        for key in races:
+            if races[key] == raca:
+                race_key = key
+        if race_key != -1:
+            del races[race_key]
+            print(f"""Raça: {raca} criada com sucesso! """)
+            await ctx.send(f"""Raça: {raca} deletada com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listarracas(ctx):
+    if ctx.author in masters:
+        await ctx.send("Raças cadastradas:\n")
+        cont = 1
+        for raca in races.values():
+            await ctx.send(f"""{cont}. {raca}""")
+            cont +=1
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def criarclasse(ctx,*,arg):
+    if ctx.author in masters:
+        classe = arg
+        code_class += 1
+        classes[code_class] = classe
+        print(f"""Classe: {classe} criada com sucesso! """)
+        await ctx.send(f"""Classe: {classe} criada com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletarclasse(ctx,*,arg):
+    if ctx.author in masters:
+        classe = arg
+        class_key = -1
+        for key in classes:
+            if classes[key] == classe:
+                class_key = key
+        if class_key != -1:
+            del classes[class_key]
+            print(f"""Classe: {classe} deletada com sucesso! """)
+            await ctx.channel.send(f"""Classe: {classe} deletada com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listarclasses(ctx):
+    if ctx.author in masters:
+        await ctx.send("Classes cadastradas:\n")
+        cont = 1
+        for classe in classes.values():
+            await ctx.send(f"""{cont}. {classe}""")
+            cont +=1
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def criarstatus(ctx,*,arg):
+    if ctx.author in masters:
+        status1 = {}
+        await ctx.send("Para adicionar um status digite '!status nomestatus'. Para sair digite '!sair'.")
+        msg1 = await bot.wait_for('message')
+        mensagem = msg1.content
+        while mensagem != '!sair':
+            if msg1.content.startswith('!status '):
+                stat = ""
+                for i in range(8, (len(msg1.content))):
+                    stat += msg1.content[i]
+                await ctx.send(f"""Status: {stat}. Para definir a sigla do status digite '!sigla nomesigla'.""")
+                msg2 = await bot.wait_for('message')
+                if msg2.content.startswith('!sigla '):
+                    stat_sigla = ""
+                    for i in range(7, (len(msg2.content))):
+                        stat_sigla += msg2.content[i]
+                    status1[stat_sigla] = stat
+                    await ctx.send(f"""Status: {stat} criado com sucesso.""")
+            await ctx.send("Para adicionar um status digite '!status nomestatus'. Para sair digite '!sair'.")
+            msg1 = await bot.wait_for('message')
+            mensagem = msg1.content
+        if status1 != {}:
+            code_status += 1
+            status[code_status] = status1
+            await ctx.send("Seus status foram armazenados")
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletarstatus(ctx,*,arg):
+    if ctx.author in masters:
+        aux = arg
+        status_key = -1
+        for key in status:
+            if key == aux:
+                status_key = key
+        if status_key > -1:
+            del status[status_key]
+            await ctx.send(f"""Grupo de Status: {status_key} deletado com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listarstatus(ctx):
+    if ctx.author in masters:
+        await ctx.send("Grupos de Status cadastrados:\n")
+        for status_key in status:
+            await ctx.send(f"""\n{status_key}.\n""")
+            for stat_key,stat in status[status_key].items():
+                await ctx.send(f"""{stat}({stat_key})\n""")
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def criarpericia(ctx,*,arg):
+    if ctx.author in masters:
+        proef = arg
+        code_proefs += 1
+        proefs[code_proefs] = proef
+        print(f"""Perícia: {proef} criada com sucesso!""")
+        await ctx.send(f"""Perícia: {proef} criada com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletarpericia(ctx,*,arg):
+    if ctx.author in masters:
+        proef = arg
+        proef_key = -1
+        for key in proefs:
+            if proefs[key] == proef:
+                proef_key = key
+        if proef_key != -1:
+            del proefs[proef_key]
+            print(f"""Perícia: {proef} deletada com sucesso! """)
+            await ctx.send(f"""Perícia: {proef} deletada com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listarpericias(ctx):
+    if ctx.author in masters:
+        await ctx.send("Perícias cadastradas:\n")
+        cont = 1
+        for proef in proefs.values():
+            await ctx.send(f"""{cont}. {proef}""")
+            cont += 1
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def criaritem(ctx,*,arg):
+    if ctx.author in masters:
+        item = arg
+        code_items += 1
+        items[code_items] = item
+        print(f"""Item: {item} criado com sucesso!""")
+        await ctx.send(f"""Item: {item} criado com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletaritem(ctx,*,arg):
+    if ctx.author in masters:
+        item = arg
+        item_key = -1
+        for key in items:
+            if items[key] == item:
+                item_key = key
+        if item_key != -1:
+            del items[item_key]
+            print(f"""Item: {item} deletado com sucesso! """)
+            await ctx.send(f"""Item: {item} deletado com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listaritems(ctx):
+    if ctx.author in masters:
+        await ctx.send("Items cadastrados:\n")
+        cont = 1
+        for item in items.values():
+            await ctx.send(f"""{cont}. {item}""")
+            cont += 1
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def criarreligiao(ctx,*,arg):
+    if ctx.author in masters:
+        religion = arg
+        code_religions += 1
+        religions[code_religions] = religion
+        print(f"""Religião: {religion} criada com sucesso!""")
+        await ctx.send(f"""Religião: {religion} criada com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletarreligiao(ctx,*,arg):
+    if ctx.author in masters:
+        religion = arg
+        religion_key = -1
+        for key in religions:
+            if religions[key] == religion:
+                religion_key = key
+        if religion_key != -1:
+            del religions[religion_key]
+            print(f"""Religião: {religion} deletada com sucesso! """)
+            await ctx.send(f"""Religião: {religion} deletada com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listarreligioes(ctx):
+    if ctx.author in masters:
+        await ctx.channel.send("Religiões cadastradas:\n")
+        cont = 1
+        for religion in religions.values():
+            await ctx.send(f"""{cont}. {religion}""")
+            cont += 1
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def criarproef(ctx,*,arg):
+    if ctx.author in masters:
+        proef = arg
+        code_proefs2 += 1
+        proefs2[code_proefs2] = proef
+        print(f"""Proeficiência: {proef} criada com sucesso!""")
+        await ctx.send(f"""Proeficiência: {proef} criada com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletarproef(ctx,*,arg):
+    if ctx.author in masters:
+        proef = arg
+        proef_key = -1
+        for key in proefs2:
+            if proefs[key] == proef:
+                proef_key = key
+        if proef_key != -1:
+            del proefs2[proef_key]
+            print(f"""Proeficiência: {proef} deletada com sucesso! """)
+            await ctx.send(f"""Proeficiência: {proef} deletada com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listarproefs(ctx):
+    if ctx.author in masters:
+        await ctx.send("Proeficiências cadastradas:\n")
+        cont = 1
+        for proef in proefs2.values():
+            await ctx.send(f"""{cont}. {proef}""")
+            cont += 1
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def criartalento(ctx,*,arg):
+    if ctx.author in masters:
+        skill = arg
+        code_skills += 1
+        skills[code_skills] = skill
+        print(f"""Talento: {skill} criado com sucesso!""")
+        await ctx.send(f"""Talento: {skill} criado com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletartalento(ctx,*,arg):
+    if ctx.author in masters:
+        skill = arg
+        skill_key = -1
+        for key in skills:
+            if skills[key] == skill:
+                skill_key = key
+        if skill_key != -1:
+            del skills[skill_key]
+            print(f"""Talento: {skill} deletado com sucesso! """)
+            await ctx.send(f"""Talento: {skill} deletado com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listartalentos(ctx):
+    if ctx.author in masters:
+        await ctx.send("Talentos cadastrados:\n")
+        cont = 1
+        for skill in skills.values():
+            await ctx.send(f"""{cont}. {skill}""")
+            cont += 1
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def criarfeitico(ctx,*,arg):
+    if ctx.author in masters:
+        spell = arg
+        code_spells += 1
+        spells[code_spells] = spell
+        print(f"""Feitiço: {spell} criado com sucesso!""")
+        await ctx.send(f"""Feitiço: {spell} criado com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletarfeitico(ctx,*,arg):
+    if ctx.author in masters:
+        spell = arg
+        spell_key = -1
+        for key in spells:
+            if spells[key] == spell:
+                spell_key = key
+        if spell_key != -1:
+            del spells[spell_key]
+            print(f"""Feitiço: {spell} deletado com sucesso! """)
+            await ctx.send(f"""Feitiço: {spell} deletado com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listarfeiticos(ctx):
+    if ctx.author in masters:
+        await ctx.send("Feitiços cadastrados:\n")
+        cont = 1
+        for spell in spells.values():
+            await ctx.send(f"""{cont}. {spell}""")
+            cont += 1
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def ajuda(ctx):
+    with open('comandos.txt', 'r') as cmd:
+        linha = cmd.readline()
+        while linha != "":
+            exibicao = linha.strip()
+            await ctx.send(exibicao)
+            linha = cmd.readline()
+        cmd.close()
+
+@bot.command()
+async def criarsistema(ctx,*,arg):
+    if ctx.author in masters:
+        system_name = arg
+        coef_level = ""
+        rules = {}
+        t_races = ""
+        t_classes = ""
+        system_races = []
+        system_classes = []
+        system_status = {}
+        await ctx.send("Grupos de Status cadastrados:\n")
+        for status_key in status:
+            await ctx.send(f"""\n{status_key}.\n""")
+            for stat_key, stat in status[status_key].items():
+                await ctx.send(f"""{stat}({stat_key})\n""")
+        await ctx.send("Quais são os status principais do sistema? (Digite !pstatus 'codigogrupostatus')")
+        msg = await bot.wait_for('message')
+        while not msg.content.startswith('!pstatus '):
+            await ctx.send("PARÂMETROS ERRADOS!\nQuais são os status principais do sistema? (Digite !pstatus 'codigogrupostatus')")
+            msg = await bot.wait_for('message')
+        g_status = ""
+        for i in range(9, (len(msg.content))):
+            g_status += msg.content[i]
+        system_status[len(system_status)+1] = ("Status principais", int(g_status))
+        await ctx.send("Deseja criar mais um tipo de status? (Digite !tipostatus 'nometipostatus' ou !sair)")
+        msg = await bot.wait_for('message')
+        while not msg.content.startswith("!sair"):
+            if msg.content.startswith('!tipostatus '):
+                g_status = ""
+                if msg.content.startswith('!tipostatus '):
+                    for i in range(12, (len(msg.content))):
+                        g_status += msg.content[i]
+                await ctx.send(f"""Deseja definir qual grupo de Status como: {g_status}? (Digite !tstatus 'codigogrupostatus')""")
+                msg = await bot.wait_for('message')
+                while not msg.content.startswith("!tstatus "):
+                    await ctx.send(f"""PARÂMETROS ERRADOS!\nDeseja definir qual grupo de Status como: {g_status}? (Digite !tstatus 'codigogrupostatus')""")
+                    msg = await bot.wait_for('message')
+                c_status = ""
+                for i in range(9, (len(msg.content))):
+                    c_status += msg.content[i]
+                system_status[len(system_status)+1] = (g_status,int(c_status))
+                await ctx.send("Deseja criar mais um tipo de status? (Digite !tipostatus 'nometipostatus' ou !sair)")
+                msg = await bot.wait_for('message')
+            else:
+                await ctx.send("PARÂMETROS ERRADOS!\nDeseja criar mais um tipo de status? (Digite !tipostatus 'nometipostatus' ou !sair)")
+                msg = await bot.wait_for('message')
+        await ctx.send("Deseja cadastrar quais raças em seu sistema?")
+        await ctx.send("Raças cadastradas:\n")
+        for race_key,race in races.items():
+            await ctx.send(f"""{race_key}. {race}""")
+        await ctx.send("Quais raças deseja inserir? (Exemplo: !raças 1 4 5 6 7 9)")
+        msg = await bot.wait_for('message')
+        while not msg.content.startswith('!raças '):
+            await ctx.send("PARÂMETROS ERRADOS!\nQual o nome do seu Sistema? (Digite !sistema nomesistema)")
+            msg = await bot.wait_for('message')
+        for num in range(7,len(msg.content)):
+            t_races += msg.content[num]
+        i = 0
+        condition = False
+        while not condition:
+            t_race = ""
+            while i < len(t_races) and (t_races[i] != " "):
+                t_race += t_races[i]
+                i += 1
+            if i == len(t_races):
+                condition = True
+            if int(t_race) in races:
+                system_races.append(int(t_race))
+                await ctx.send(f"""Raça: {races[int(t_race)]} adicionado(a) ao sistema.""")
+            i += 1
+        await ctx.send("Deseja cadastrar quais classes em seu sistema?")
+        await ctx.send("Classes cadastradas:\n")
+        for class_key, class1 in classes.items():
+            await ctx.send(f"""{class_key}. {class1}""")
+        await ctx.send("Quais classes deseja inserir? (Exemplo: !classes 1 4 5 6 7 9)")
+        msg = await bot.wait_for('message')
+        while not msg.content.startswith('!classes '):
+            await ctx.send("PARÂMETROS ERRADOS!\nQual o nome do seu Sistema? (Digite !sistema nomesistema)")
+            msg = await bot.wait_for('message')
+        for num in range(9, len(msg.content)):
+            t_classes += msg.content[num]
+        i = 0
+        condition = False
+        while not condition:
+            t_class = ""
+            while i < len(t_classes) and (t_classes[i] != " "):
+                t_class += t_classes[i]
+                i += 1
+            if i == len(t_classes):
+                condition = True
+            if int(t_class) in classes:
+                system_classes.append(int(t_class))
+                await ctx.send(f"""Classe: {classes[int(t_class)]} adicionado(a) ao sistema.""")
+            i += 1
+        code_systems += 1
+        system = [system_name, system_status, system_races, system_classes]
+        systems[code_systems] = system
+        await ctx.send(f"""Sistema: {system_name} criado com sucesso! """)
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def listarsistemas(ctx):
+    if ctx.author in masters:
+        cont = 1
+        await ctx.send("Sistemas cadastrados:")
+        for key in systems:
+            await ctx.send(f"""{cont}. {systems[key][0]}:""")
+            for status_type, cd_gstatus in systems[key][1].values():
+                await ctx.send(f"""{status_type}:""")
+                for sig, stat in status[cd_gstatus].items():
+                    await ctx.send(f"""***{stat}({sig})""")
+            await ctx.send("Raças:")
+            for cd_race in systems[key][2]:
+                 await ctx.send(f"""***{races[cd_race]}""")
+            await ctx.send("Classes:")
+            for cd_class in systems[key][3]:
+                await ctx.send(f"""***{classes[cd_class]}""")
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def deletarsistema(ctx,*,arg):
+    if ctx.author in masters:
+        system = arg
+        sys_key = -1
+        for key,sys in systems.items():
+            if system == sys[0]:
+                sys_key = key
+        if sys_key > -1:
+            del systems[sys_key]
+            await ctx.send(f"""Sistema: {system} deletado com sucesso!""")
+    else:
+        await ctx.send(f"""Usuário: {ctx.author} não autorizado a usar esse comando. Somente os mestres têm acesso!""")
+
+@bot.command()
+async def teste(ctx):
+    await ctx.send('Olá mestre!')
+
+bot.loop.create_task(update_stats())
+bot.run('NTc1NzQ0ODI5NjU3NTc5NTMw.XNMawA.8uNaNnoWwxHZUmv777AnIxXOqgI')
